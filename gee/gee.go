@@ -17,8 +17,8 @@ func NewEngine() *Engine {
 }
 
 func (g *Engine) AddRouter(mathod string, path string, handler HandlerFunc) {
-	key := mathod + "-" + path
-	g.router.handlers[key] = handler
+	// key := mathod + "-" + path
+	g.router.AddRouter(mathod, path, handler)
 }
 
 func (g *Engine) GET(path string, handler HandlerFunc) {

@@ -16,6 +16,7 @@ type Context struct {
 	//请求paylod
 	Path   string
 	Method string
+	Params map[string]string
 	//响应
 	StatusCodes int
 }
@@ -25,8 +26,15 @@ func NewContext(w http.ResponseWriter, rep *http.Request) *Context {
 		Writer: w,
 		Rep:    rep,
 		Path:   rep.URL.Path,
+		Params: make(map[string]string),
 		Method: rep.Method,
 	}
+}
+
+// 从Context结构体中拿Params参数
+func (ctx *Context) Param(key string) string {
+	value, _ := ctx.Params[key]
+	return value
 }
 
 // 从Context结构体中拿取数据
