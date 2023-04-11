@@ -19,6 +19,8 @@ type Context struct {
 	Params map[string]string
 	//响应
 	StatusCodes int
+	Handler     []HandlerFunc
+	index       int
 }
 
 func NewContext(w http.ResponseWriter, rep *http.Request) *Context {
@@ -28,7 +30,22 @@ func NewContext(w http.ResponseWriter, rep *http.Request) *Context {
 		Path:   rep.URL.Path,
 		Params: make(map[string]string),
 		Method: rep.Method,
+		index:  -1,
 	}
+}
+
+// 切到下一个中间件
+func (ctx *Context) Next() {
+	ctx.index++
+	l := len(ctx.Handler)
+	for ; ctx.index < l; ctx.index++ {
+		ctx.Handler[ctx.index](ctx)
+	}
+}
+
+// 注册中间件到路由组中
+func (group *RouterGroup) Use(handler ...HandlerFunc) {
+	group.middlewares = append(group.middlewares, handler...)
 }
 
 // 从Context结构体中拿Params参数

@@ -81,10 +81,13 @@ func (r *Router) Handle(ctx *Context) {
 	if n != nil {
 		ctx.Params = param
 		pattern := ctx.Rep.Method + "-" + n.Pattern
-		r.handlers[pattern](ctx)
+		ctx.Handler = append(ctx.Handler, r.handlers[pattern])
 	} else {
-		fmt.Fprintf(ctx.Writer, "404,NOT FOUND:%v", ctx.Rep.URL)
+		ctx.Handler = append(ctx.Handler, func(ctx *Context) {
+			fmt.Fprintf(ctx.Writer, "404,NOT FOUND:%v", ctx.Rep.URL)
+		})
 	}
+	ctx.Next()
 	// if handler, ok := r.handlers[pattern]; ok {
 	// 	handler(ctx)
 	// } else {
